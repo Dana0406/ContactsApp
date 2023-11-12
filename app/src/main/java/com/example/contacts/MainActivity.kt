@@ -11,6 +11,10 @@ import com.example.contacts.model.Contact
 import com.example.contacts.model.ContactListener
 import com.example.contacts.model.ContactsService
 import android.graphics.Color;
+import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.CheckBox
 import android.widget.ImageButton
 import com.example.contacts.databinding.EditContactBinding
 
@@ -22,11 +26,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dialog: Dialog
 
     private lateinit var addContactButton: ImageButton
-
+    private lateinit var checkBox: CheckBox
 
     private val contactsService: ContactsService
         get() = (applicationContext as App).contactsService
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +76,23 @@ class MainActivity : AppCompatActivity() {
             contactsService.addContact(showCustomDialogForAdding(dataChecking(contactNew)))
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_delete, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        contactsService.addCheckBox()
+        with(binding){
+            addButton.visibility = View.GONE
+            deleteButton.visibility = View.VISIBLE
+            cancelButton.visibility = View.VISIBLE
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showCustomDialogForEditing(contact: Contact) {
@@ -130,12 +150,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return contact
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu_delete, menu)
-        return super.onCreateOptionsMenu(menu)
     }
 
     private val contactsListener: ContactListener = {

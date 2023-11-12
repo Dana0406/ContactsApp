@@ -15,7 +15,7 @@ class ContactsService {
         contacts = (1..100).map {
             Contact(
                 id = it.toLong(),
-                firstLastName = faker.name().fullName(),
+                firstLastName = faker.name().firstName() + " " + faker.name().lastName(),
                 phoneNumber = faker.phoneNumber().phoneNumber()
             )
         }.toMutableList()
@@ -41,6 +41,11 @@ class ContactsService {
         val newIndex = oldIndex + moveBy
         if(newIndex < 0 || newIndex >= contacts.size) return
         Collections.swap(contacts, oldIndex, newIndex)
+        notifyChanges()
+    }
+
+    fun addCheckBox(){
+        contacts.forEach { it.isCheckBoxVisible = true }
         notifyChanges()
     }
 

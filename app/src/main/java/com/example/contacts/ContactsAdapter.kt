@@ -35,8 +35,10 @@ class ContactsAdapter(private val actionListener: ContactActionListener
             holder.itemView.tag = contact
 
             surnameNameTextView.text = contact.firstLastName
-            phoneNumberTextView.text = contact.phoneNumber.toString()
+            phoneNumberTextView.text = contact.phoneNumber
         }
+
+        holder.binding.check.visibility = if (contact.isCheckBoxVisible) View.VISIBLE else View.GONE
     }
 
     class ContactsViewHolder(
