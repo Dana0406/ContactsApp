@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         adapter = ContactsAdapter(object : ContactActionListener {
             override fun onContactEdit(contact: Contact) {
                 dialog.show()
-                showCustomDialog(contact)
+                showCustomDialogForEditing(contact)
             }
 
             override fun addContact(contact: Contact) {
@@ -66,22 +66,33 @@ class MainActivity : AppCompatActivity() {
             var contactNew = Contact(
                 0,
                 "",
-                "",
                 ""
             )
 
             contactNew.id = (contactsService.getContacts().size + 1).toLong()
-            contactsService.addContact(showCustomDialog(dataChecking(contactNew)))
+            contactsService.addContact(showCustomDialogForAdding(dataChecking(contactNew)))
         }
 
     }
 
-    private fun showCustomDialog(contact: Contact): Contact{
+    private fun showCustomDialogForEditing(contact: Contact) {
         with(bindingDialog) {
-            surnameNameEditText.setText(contact.firstName + contact.lastName)
+            surnameNameEditText.setText(contact.firstLastName)
             phoneNumberEditText.setText(contact.phoneNumber)
         }
 
+        bindingDialog.saveEditions.setOnClickListener {
+            contactsService.addListener(contactsListener)
+
+            dataChecking(contact)
+        }
+
+        bindingDialog.deleteEditions.setOnClickListener {
+            dialog.hide()
+        }
+    }
+
+    private fun showCustomDialogForAdding(contact: Contact): Contact {
         bindingDialog.saveEditions.setOnClickListener {
             contactsService.addListener(contactsListener)
 
@@ -95,31 +106,29 @@ class MainActivity : AppCompatActivity() {
 
         bindingDialog.deleteEditions.setOnClickListener {
             dialog.hide()
+            contactsService.deleteContact(contact)
         }
         return contact
     }
 
-    private fun dataChecking(contact: Contact): Contact{
+    private fun dataChecking(contact: Contact): Contact {
         with(bindingDialog) {
             if (!surnameNameEditText.text.toString()
                     .isEmpty() && !phoneNumberEditText.text.toString().isEmpty()
             ) {
-                if (surnameNameEditText.text.contains(' ')) {
-                    contact.firstName = surnameNameEditText.text.toString().substringBefore(" ")
-                    contact.lastName = surnameNameEditText.text.toString().substringAfter(" ")
-                } else {
-                    contact.firstName = surnameNameEditText.text.toString()
-                    contact.lastName = " "
-                }
+                contact.firstLastName = surnameNameEditText.text.toString()
                 contact.phoneNumber = phoneNumberEditText.text.toString()
+
+                dialog.hide()
+
+                bindingDialog.surnameNameEditText.text.clear()
+                bindingDialog.phoneNumberEditText.text.clear()
             } else if (surnameNameEditText.text.toString().isEmpty()) {
                 surnameNameEditText.error = "Введите данные"
             } else if (phoneNumberEditText.text.toString().isEmpty()) {
                 phoneNumberEditText.error = "Введите данные"
             }
-
         }
-
         return contact
     }
 

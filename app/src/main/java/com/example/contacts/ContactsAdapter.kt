@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
 
@@ -35,7 +34,7 @@ class ContactsAdapter(private val actionListener: ContactActionListener
         with(holder.binding){
             holder.itemView.tag = contact
 
-            surnameNameTextView.text = contact.firstName + " " + contact.lastName
+            surnameNameTextView.text = contact.firstLastName
             phoneNumberTextView.text = contact.phoneNumber.toString()
         }
     }

@@ -15,8 +15,7 @@ class ContactsService {
         contacts = (1..100).map {
             Contact(
                 id = it.toLong(),
-                firstName = faker.name().firstName(),
-                lastName = faker.name().lastName(),
+                firstLastName = faker.name().fullName(),
                 phoneNumber = faker.phoneNumber().phoneNumber()
             )
         }.toMutableList()
