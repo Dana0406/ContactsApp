@@ -4,22 +4,22 @@ import com.github.javafaker.Faker
 import java.util.*
 
 typealias ContactListener = (contactsList: List<Contact>) -> Unit
-
-class ContactService {
+class ContactsService {
     private var contacts = mutableListOf<Contact>()
 
     private val listeners = mutableSetOf<ContactListener>()
 
     init {
-        val faker = Faker.instance()
-        val generatedContacts = (1..100).map {
+        val locale = Locale("ru")
+        val faker = Faker(locale)
+        contacts = (1..100).map {
             Contact(
                 id = it.toLong(),
                 firstName = faker.name().firstName(),
                 lastName = faker.name().lastName(),
-                phoneNumber = faker.phoneNumber()
+                phoneNumber = faker.phoneNumber().phoneNumber()
             )
-        }
+        }.toMutableList()
     }
 
     fun getContacts(): List<Contact>{
