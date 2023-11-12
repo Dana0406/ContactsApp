@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
 
-class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener {
+class ContactsAdapter(private val actionListener: ContactActionListener
+) : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener, View.OnClickListener {
 
     var contacts: List<Contact> = emptyList()
         set(value) {
@@ -19,6 +20,9 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemContactBinding.inflate(inflater, parent, false)
+
+        binding.root.setOnClickListener(this)
+
         return ContactsViewHolder(binding)
     }
 
@@ -29,6 +33,8 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
         val contact = contacts[position]
         with(holder.binding){
+            holder.itemView.tag = contact
+
             surnameNameTextView.text = contact.firstName + " " + contact.lastName
             phoneNumberTextView.text = contact.phoneNumber.toString()
         }
@@ -40,5 +46,15 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
 
     override fun onContactEdit(contact: Contact) {
 
+    }
+
+    override fun addContact(contact: Contact) {
+
+    }
+
+    override fun onClick(view: View) {
+        val contact = view.tag as Contact
+
+        actionListener.onContactEdit(contact)
     }
 }
