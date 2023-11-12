@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
 
-class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>() {
+class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener {
 
     var contacts: List<Contact> = emptyList()
         set(value) {
@@ -37,4 +37,8 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
     class ContactsViewHolder(
         val binding: ItemContactBinding
     ) : RecyclerView.ViewHolder(binding.root)
+
+    override fun onContactEdit(contact: Contact) {
+
+    }
 }
