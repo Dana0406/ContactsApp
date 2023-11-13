@@ -1,19 +1,42 @@
 package com.example.contacts
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
 
-class ContactsAdapter(private val actionListener: ContactActionListener
-) : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener, View.OnClickListener {
+class ContactsDiffCallback(
+    private val oldList: List<Contact>,
+    private val newList: List<Contact>
+) : DiffUtil.Callback() {
+    override fun getOldListSize(): Int = oldList.size
+    override fun getNewListSize(): Int = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].id == newList[newItemPosition].id
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
+    }
+
+}
+
+class ContactsAdapter(
+    private val actionListener: ContactActionListener
+) : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener,
+    View.OnClickListener {
 
     var contacts: List<Contact> = emptyList()
         set(value) {
+            val diffCallback = ContactsDiffCallback(field, value)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
             field = value
-            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
@@ -31,20 +54,23 @@ class ContactsAdapter(private val actionListener: ContactActionListener
 
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
         val contact = contacts[position]
-        with(holder.binding){
+        with(holder.binding) {
             holder.itemView.tag = contact
 
             surnameNameTextView.text = contact.firstLastName
             phoneNumberTextView.text = contact.phoneNumber
-
             check.visibility = if (contact.isCheckBoxVisible) View.VISIBLE else View.GONE
-
             check.isChecked = contact.isSelected
 
             check.setOnClickListener {
                 toggleSelection(position)
             }
         }
+    }
+
+    fun updateData(newList: List<Contact>) {
+        contacts = newList
+        notifyDataSetChanged()
     }
 
     fun toggleSelection(position: Int) {
@@ -63,11 +89,7 @@ class ContactsAdapter(private val actionListener: ContactActionListener
     ) : RecyclerView.ViewHolder(binding.root)
 
     override fun onContactEdit(contact: Contact) {
-
-    }
-
-    override fun addContact(contact: Contact) {
-
+        notifyDataSetChanged()
     }
 
     override fun onClick(view: View) {
