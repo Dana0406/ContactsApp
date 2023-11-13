@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
+import com.example.contacts.model.ItemTouchHelperAdapter
+import java.util.*
 
 class ContactsDiffCallback(
     private val oldList: List<Contact>,
@@ -29,7 +31,7 @@ class ContactsDiffCallback(
 class ContactsAdapter(
     private val actionListener: ContactActionListener
 ) : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(), ContactActionListener,
-    View.OnClickListener {
+    View.OnClickListener, ItemTouchHelperAdapter {
 
     var contacts: List<Contact> = emptyList()
         set(value) {
@@ -96,5 +98,11 @@ class ContactsAdapter(
         val contact = view.tag as Contact
 
         actionListener.onContactEdit(contact)
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        Collections.swap(contacts, fromPosition, toPosition)
+        notifyItemMoved(fromPosition, toPosition)
+        return true
     }
 }

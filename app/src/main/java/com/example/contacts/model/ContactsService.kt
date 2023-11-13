@@ -61,8 +61,7 @@ class ContactsService {
 
     fun addCheckBox() {
         contacts = ArrayList(contacts)
-        contacts.forEach {
-            it.isCheckBoxVisible = true
+        contacts.forEach { it.isCheckBoxVisible = true }
         notifyChanges()
     }
 
