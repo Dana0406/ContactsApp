@@ -36,9 +36,26 @@ class ContactsAdapter(private val actionListener: ContactActionListener
 
             surnameNameTextView.text = contact.firstLastName
             phoneNumberTextView.text = contact.phoneNumber
-        }
 
-        holder.binding.check.visibility = if (contact.isCheckBoxVisible) View.VISIBLE else View.GONE
+            check.visibility = if (contact.isCheckBoxVisible) View.VISIBLE else View.GONE
+
+            check.isChecked = contact.isSelected
+
+            check.setOnClickListener {
+                toggleSelection(position)
+            }
+        }
+    }
+
+    fun toggleSelection(position: Int) {
+        val contact = contacts[position]
+        contact.isSelected = !contact.isSelected
+        notifyItemChanged(position)
+    }
+
+    fun clearSelection() {
+        contacts.forEach { it.isSelected = false }
+        notifyDataSetChanged()
     }
 
     class ContactsViewHolder(

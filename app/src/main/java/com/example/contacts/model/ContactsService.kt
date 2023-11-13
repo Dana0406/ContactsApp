@@ -35,6 +35,11 @@ class ContactsService {
         notifyChanges()
     }
 
+    fun deleteContacts(contactsToDelete: List<Contact>) {
+        contacts.removeAll(contactsToDelete)
+        notifyChanges()
+    }
+
     fun moveContact(contact: Contact, moveBy: Int){
         val oldIndex = contacts.indexOfFirst { it.id == contact.id }
         if(oldIndex == -1) return
@@ -47,6 +52,15 @@ class ContactsService {
     fun addCheckBox(){
         contacts.forEach { it.isCheckBoxVisible = true }
         notifyChanges()
+    }
+
+    fun deleteCheckBox(){
+        contacts.forEach { it.isCheckBoxVisible = false }
+        notifyChanges()
+    }
+
+    fun getSelectedContacts(): List<Contact> {
+        return contacts.filter { it.isSelected }
     }
 
     fun addListener(listener: ContactListener){

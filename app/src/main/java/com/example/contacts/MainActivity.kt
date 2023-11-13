@@ -16,12 +16,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageButton
-import com.example.contacts.databinding.EditContactBinding
+import android.widget.Toast
+import com.example.contacts.databinding.EditDeleteDialogBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var bindingDialog: EditContactBinding
+    private lateinit var bindingDialog: EditDeleteDialogBinding
     private lateinit var adapter: ContactsAdapter
     private lateinit var dialog: Dialog
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         dialog = Dialog(this@MainActivity)
-        bindingDialog = EditContactBinding.inflate(layoutInflater)
+        bindingDialog = EditDeleteDialogBinding.inflate(layoutInflater)
         dialog.setContentView(bindingDialog.root)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -91,6 +92,41 @@ class MainActivity : AppCompatActivity() {
             deleteButton.visibility = View.VISIBLE
             cancelButton.visibility = View.VISIBLE
         }
+
+        binding.deleteButton.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                val selectedContacts = contactsService.getSelectedContacts()
+
+                if (selectedContacts.isNotEmpty()) {
+                    contactsService.deleteContacts(selectedContacts)
+                    Toast.makeText(this@MainActivity,"Контакты удалены", Toast.LENGTH_SHORT).show()
+
+                    with(binding){
+                        addButton.visibility = View.VISIBLE
+                        deleteButton.visibility = View.GONE
+                        cancelButton.visibility = View.GONE
+                    }
+                    contactsService.deleteCheckBox()
+
+                    adapter.clearSelection()
+                } else {
+                    Toast.makeText(this@MainActivity,"Выберите контакты для удаления", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        binding.cancelButton.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                with(binding){
+                    addButton.visibility = View.VISIBLE
+                    deleteButton.visibility = View.GONE
+                    cancelButton.visibility = View.GONE
+                }
+                contactsService.deleteCheckBox()
+                adapter.clearSelection()
+            }
+
+        })
 
         return super.onOptionsItemSelected(item)
     }
