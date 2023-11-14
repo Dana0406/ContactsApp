@@ -1,6 +1,5 @@
 package com.example.contacts
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ItemContactBinding
 import com.example.contacts.model.Contact
-import com.example.contacts.model.ItemTouchHelperAdapter
 import java.util.*
 
 class ContactsDiffCallback(
@@ -59,7 +57,8 @@ class ContactsAdapter(
         with(holder.binding) {
             holder.itemView.tag = contact
 
-            surnameNameTextView.text = contact.firstLastName
+            nameTextView.text = contact.firstName
+            surnameTextView.text = contact.lastName
             phoneNumberTextView.text = contact.phoneNumber
             check.visibility = if (contact.isCheckBoxVisible) View.VISIBLE else View.GONE
             check.isChecked = contact.isSelected
@@ -69,6 +68,10 @@ class ContactsAdapter(
             }
         }
     }
+
+    class ContactsViewHolder(
+        val binding: ItemContactBinding
+    ) : RecyclerView.ViewHolder(binding.root)
 
     fun updateData(newList: List<Contact>) {
         contacts = newList
@@ -85,10 +88,6 @@ class ContactsAdapter(
         contacts.forEach { it.isSelected = false }
         notifyDataSetChanged()
     }
-
-    class ContactsViewHolder(
-        val binding: ItemContactBinding
-    ) : RecyclerView.ViewHolder(binding.root)
 
     override fun onContactEdit(contact: Contact) {
         notifyDataSetChanged()

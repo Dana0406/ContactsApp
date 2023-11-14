@@ -1,8 +1,5 @@
 package com.example.contacts.model
 
-import android.util.Log
-import androidx.recyclerview.widget.DiffUtil
-import com.example.contacts.ContactsDiffCallback
 import com.github.javafaker.Faker
 import java.util.*
 import kotlin.collections.ArrayList
@@ -20,7 +17,8 @@ class ContactsService {
         contacts = (1..100).map {
             Contact(
                 id = it.toLong(),
-                firstLastName = faker.name().firstName() + " " + faker.name().lastName(),
+                firstName = faker.name().firstName(),
+                lastName = faker.name().lastName(),
                 phoneNumber = faker.phoneNumber().phoneNumber()
             )
         }.toMutableList()
@@ -38,7 +36,8 @@ class ContactsService {
 
     fun editContact(contact: Contact) {
         val index = contacts.indexOfFirst { it.id == contact.id }
-        val updateContact = contact.copy(firstLastName = contact.firstLastName, phoneNumber = contact.phoneNumber)
+        val updateContact = contact.copy(firstName = contact.firstName, lastName = contact.lastName,
+            phoneNumber = contact.phoneNumber)
         contacts = ArrayList(contacts)
         contacts[index] = updateContact
         notifyChanges()
@@ -47,15 +46,6 @@ class ContactsService {
     fun deleteContacts(contactsToDelete: List<Contact>) {
         contacts = ArrayList(contacts)
         contacts.removeAll(contactsToDelete)
-        notifyChanges()
-    }
-
-    fun moveContact(contact: Contact, moveBy: Int) {
-        val oldIndex = contacts.indexOfFirst { it.id == contact.id }
-        if (oldIndex == -1) return
-        val newIndex = oldIndex + moveBy
-        if (newIndex < 0 || newIndex >= contacts.size) return
-        Collections.swap(contacts, oldIndex, newIndex)
         notifyChanges()
     }
 
@@ -68,12 +58,6 @@ class ContactsService {
     fun deleteCheckBox() {
         contacts = ArrayList(contacts)
         contacts.forEach {it.isCheckBoxVisible = false }
-        notifyChanges()
-    }
-
-    fun toggleSelection(position: Int) {
-        val contact = contacts[position]
-        contact.isSelected = !contact.isSelected
         notifyChanges()
     }
 

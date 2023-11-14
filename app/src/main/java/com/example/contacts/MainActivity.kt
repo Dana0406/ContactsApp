@@ -13,7 +13,6 @@ import com.example.contacts.model.ContactsService
 import android.graphics.Color;
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.Toast
@@ -30,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dialog: Dialog
 
     private lateinit var addContactButton: ImageButton
-    private lateinit var checkBox: CheckBox
 
     private val contactsService: ContactsService
         get() = (applicationContext as App).contactsService
@@ -69,40 +67,12 @@ class MainActivity : AppCompatActivity() {
 
         contactsService.addListener(contactsListener)
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            override fun isLongPressDragEnabled(): Boolean {
-                return true
-            }
-
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-                val swipeFlags = 0 // Для отключения свайпа, установите swipeFlags в 0
-                return makeMovementFlags(dragFlags, swipeFlags)
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-
-                return adapter.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-            }
-        })
-
-        itemTouchHelper.attachToRecyclerView(binding.contactsRecyclerView)
+        addTouch()
 
         addContactButton.setOnClickListener {
             dialog.show()
 
-            showCustomDialog(Contact((contactsService.getContacts().size + 1).toLong(), "", ""))
+            showCustomDialog(Contact((contactsService.getContacts().size + 1).toLong(), "", "",""))
         }
 
     }
@@ -111,56 +81,6 @@ class MainActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_delete, menu)
         return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun showCustomDialog(contact: Contact) {
-        with(bindingDialog) {
-            if (contact.id != (contactsService.getContacts().size + 1).toLong()) {
-                surnameNameEditText.setText(contact.firstLastName)
-                phoneNumberEditText.setText(contact.phoneNumber)
-            } else {
-                surnameNameEditText.text.clear()
-                phoneNumberEditText.text.clear()
-            }
-        }
-
-        bindingDialog.saveEditions.setOnClickListener {
-            contactsService.addListener(contactsListener)
-
-            if (dataChecking(contact)) {
-                dialog.hide()
-            }
-        }
-
-        bindingDialog.deleteEditions.setOnClickListener {
-            dialog.hide()
-            if (contact.id != (contactsService.getContacts().size + 1).toLong()) {
-                bindingDialog.surnameNameEditText.text.clear()
-                bindingDialog.phoneNumberEditText.text.clear()
-            }
-        }
-    }
-
-    private fun dataChecking(contact: Contact): Boolean {
-        with(bindingDialog) {
-            if (surnameNameEditText.text.toString().isEmpty()) {
-                surnameNameEditText.error = "Введите данные"
-                return false
-            } else if (phoneNumberEditText.text.toString().isEmpty()) {
-                phoneNumberEditText.error = "Введите данные"
-                return false
-            } else {
-                contact.firstLastName = surnameNameEditText.text.toString()
-                contact.phoneNumber = phoneNumberEditText.text.toString()
-
-                if (contact.id == (contactsService.getContacts().size + 1).toLong()) {
-                    contactsService.addContact(contact)
-                } else {
-                    contactsService.editContact(contact)
-                }
-                return true
-            }
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -213,6 +133,92 @@ class MainActivity : AppCompatActivity() {
         })
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun addTouch(){
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun isLongPressDragEnabled(): Boolean {
+                return true
+            }
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                val swipeFlags = 0
+                return makeMovementFlags(dragFlags, swipeFlags)
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                return adapter.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.contactsRecyclerView)
+    }
+
+    private fun showCustomDialog(contact: Contact) {
+        with(bindingDialog) {
+            if (contact.id != (contactsService.getContacts().size + 1).toLong()) {
+                nameEditText.setText(contact.firstName)
+                surnameEditText.setText(contact.lastName)
+                phoneNumberEditText.setText(contact.phoneNumber)
+            } else {
+                nameEditText.text.clear()
+                surnameEditText.text.clear()
+                phoneNumberEditText.text.clear()
+            }
+        }
+
+        bindingDialog.saveEditions.setOnClickListener {
+            contactsService.addListener(contactsListener)
+
+            if (dataChecking(contact)) {
+                dialog.hide()
+            }
+        }
+
+        bindingDialog.deleteEditions.setOnClickListener {
+            dialog.hide()
+            if (contact.id != (contactsService.getContacts().size + 1).toLong()) {
+                bindingDialog.nameEditText.text.clear()
+                bindingDialog.surnameEditText.text.clear()
+                bindingDialog.phoneNumberEditText.text.clear()
+            }
+        }
+    }
+
+    private fun dataChecking(contact: Contact): Boolean {
+        with(bindingDialog) {
+            if (surnameEditText.text.toString().isEmpty()) {
+                surnameEditText.error = "Введите данные"
+                return false
+            } else if (phoneNumberEditText.text.toString().isEmpty()) {
+                phoneNumberEditText.error = "Введите данные"
+                return false
+            } else {
+                contact.lastName = surnameEditText.text.toString()
+                contact.firstName = nameEditText.text.toString()
+                contact.phoneNumber = phoneNumberEditText.text.toString()
+
+                if (contact.id == (contactsService.getContacts().size + 1).toLong()) {
+                    contactsService.addContact(contact)
+                } else {
+                    contactsService.editContact(contact)
+                }
+                return true
+            }
+        }
     }
 
     private val contactsListener: ContactListener = {
